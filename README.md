@@ -3,821 +3,658 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Banco 1 - Quiz Interactivo</title>
+  <title>Banco 1 - Quiz de 20 preguntas</title>
   <style>
-    :root {
-      --bg1: #0f172a;
-      --bg2: #1e293b;
-      --card: rgba(255,255,255,0.08);
-      --text: #e5eefc;
-      --muted: #b7c6e0;
-      --accent: #38bdf8;
-      --ok: #22c55e;
-      --bad: #ef4444;
-      --warn: #f59e0b;
-      --shadow: 0 20px 50px rgba(0,0,0,.25);
-      --radius: 22px;
+    :root{
+      --bg:#0f172a;
+      --card:#111827;
+      --card2:#1f2937;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#38bdf8;
+      --ok:#22c55e;
+      --bad:#ef4444;
+      --warn:#f59e0b;
     }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, #1d4ed8 0%, transparent 28%),
-        radial-gradient(circle at top right, #0ea5e9 0%, transparent 22%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height: 100vh;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:var(--text);
+      min-height:100vh;
     }
-
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 24px;
+    .container{
+      max-width:1000px;
+      margin:0 auto;
+      padding:24px;
     }
-
-    .hero, .panel, .quiz-card, .summary {
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(12px);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+    .card{
+      background:rgba(17,24,39,.92);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:24px;
+      box-shadow:0 20px 40px rgba(0,0,0,.25);
     }
-
-    .hero {
-      padding: 28px;
-      margin-bottom: 18px;
+    h1,h2,h3,p{margin-top:0}
+    .top{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
     }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 3vw, 2.8rem);
-      line-height: 1.05;
+    .badge{
+      background:#0ea5e915;
+      border:1px solid #38bdf840;
+      color:#bae6fd;
+      padding:8px 12px;
+      border-radius:999px;
+      font-weight:bold;
+      font-size:14px;
     }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.5;
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin:18px 0 24px;
     }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 18px;
+    .stat{
+      background:var(--card2);
+      border-radius:16px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.07);
     }
-
-    .stat {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
+    .stat span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:6px;
     }
-
-    .stat small {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 6px;
+    .progress-box{
+      margin:20px 0;
     }
-
-    .stat strong {
-      font-size: 1.25rem;
+    .progress{
+      width:100%;
+      height:12px;
+      background:#334155;
+      border-radius:999px;
+      overflow:hidden;
     }
-
-    .panel {
-      padding: 20px;
-      margin-bottom: 18px;
+    .progress-bar{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg,var(--ok),var(--accent));
+      transition:width .3s ease;
     }
-
-    .config-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      align-items: end;
+    .question-box{
+      margin-top:20px;
+      display:none;
     }
-
-    label {
-      display: block;
-      font-size: .95rem;
-      color: var(--muted);
-      margin-bottom: 8px;
+    .question-number{
+      color:var(--accent);
+      font-weight:bold;
+      margin-bottom:10px;
     }
-
-    select, button {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 1rem;
+    .question{
+      font-size:24px;
+      line-height:1.4;
+      margin-bottom:20px;
     }
-
-    select {
-      background: rgba(255,255,255,.12);
-      color: var(--text);
-      outline: none;
-      border: 1px solid rgba(255,255,255,.12);
+    .options{
+      display:grid;
+      gap:12px;
     }
-
-    button {
-      cursor: pointer;
-      font-weight: 700;
-      transition: transform .15s ease, filter .15s ease;
+    .option{
+      width:100%;
+      text-align:left;
+      background:var(--card2);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+      padding:16px;
+      border-radius:14px;
+      cursor:pointer;
+      font-size:16px;
+      transition:.2s;
     }
-
-    button:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    button:active { transform: translateY(1px); }
-
-    .primary { background: linear-gradient(135deg, #38bdf8, #2563eb); color: white; }
-    .secondary { background: rgba(255,255,255,.11); color: white; }
-    .danger { background: rgba(239,68,68,.14); color: #fecaca; }
-
-    .quiz-card {
-      padding: 24px;
-      display: none;
+    .option:hover{
+      transform:translateY(-1px);
+      border-color:#38bdf880;
     }
-
-    .topbar {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
+    .option.selected{
+      border:2px solid var(--accent);
+      background:#0ea5e920;
     }
-
-    .progress-wrap {
-      flex: 1;
-      min-width: 240px;
+    .option.correct{
+      background:#15803d30;
+      border:2px solid var(--ok);
     }
-
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      color: var(--muted);
-      font-size: .95rem;
-      margin-bottom: 8px;
+    .option.wrong{
+      background:#b91c1c30;
+      border:2px solid var(--bad);
     }
-
-    .progress {
-      width: 100%;
-      height: 12px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      overflow: hidden;
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:20px;
     }
-
-    .bar {
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #22c55e, #38bdf8);
-      transition: width .35s ease;
+    button.main-btn{
+      background:linear-gradient(135deg,#0ea5e9,#2563eb);
+      color:white;
+      border:none;
+      padding:14px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:15px;
     }
-
-    .pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: .95rem;
-      background: rgba(255,255,255,.08);
+    button.secondary-btn{
+      background:#334155;
+      color:white;
+      border:none;
+      padding:14px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:15px;
     }
-
-    .question-head {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 8px;
+    .feedback{
+      margin-top:18px;
+      padding:16px;
+      border-radius:14px;
+      display:none;
+      line-height:1.6;
     }
-
-    .topic {
-      background: rgba(56,189,248,.15);
-      color: #bae6fd;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: .9rem;
-      font-weight: 700;
+    .feedback.ok{
+      background:#14532d55;
+      border:1px solid #22c55e88;
     }
-
-    .difficulty {
-      background: rgba(245,158,11,.13);
-      color: #fde68a;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: .9rem;
-      font-weight: 700;
+    .feedback.bad{
+      background:#7f1d1d55;
+      border:1px solid #ef444488;
     }
-
-    .question {
-      font-size: clamp(1.2rem, 2vw, 1.5rem);
-      line-height: 1.4;
-      margin: 14px 0 18px;
+    .start-screen, .result-screen{
+      display:block;
     }
-
-    .options {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 18px;
+    .result-screen{
+      display:none;
+      margin-top:20px;
     }
-
-    .option {
-      text-align: left;
-      background: rgba(255,255,255,.07);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,.1);
-      padding: 16px;
-      border-radius: 18px;
-      font-weight: 600;
+    .review-item{
+      margin-top:12px;
+      background:var(--card2);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:14px;
     }
-
-    .option.selected {
-      outline: 2px solid rgba(56,189,248,.8);
-      background: rgba(56,189,248,.14);
+    .small{
+      color:var(--muted);
+      font-size:14px;
     }
-
-    .option.correct {
-      background: rgba(34,197,94,.16);
-      border-color: rgba(34,197,94,.5);
-    }
-
-    .option.wrong {
-      background: rgba(239,68,68,.15);
-      border-color: rgba(239,68,68,.5);
-    }
-
-    .explain {
-      display: none;
-      margin-top: 10px;
-      border-radius: 18px;
-      padding: 16px;
-      line-height: 1.6;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-    }
-
-    .explain.ok { border-color: rgba(34,197,94,.35); }
-    .explain.bad { border-color: rgba(239,68,68,.35); }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .summary {
-      display: none;
-      padding: 24px;
-      margin-top: 18px;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-    }
-
-    .review-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .review-item {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-    }
-
-    .mini {
-      color: var(--muted);
-      font-size: .95rem;
-    }
-
-    .celebrate {
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin: 10px 0 14px;
-    }
-
-    .hidden { display: none !important; }
-
-    @media (max-width: 780px) {
-      .stats, .config-grid, .summary-grid { grid-template-columns: 1fr; }
+    @media (max-width: 700px){
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+      .question{
+        font-size:20px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <h1>Banco 1 · Quiz interactivo</h1>
-      <p class="subtitle">
-        Practica Buck-Boost, PFC, AC/AC, cicloconvertidor, SVC y AC/DC con PWM.
-        Hay preguntas con respuestas correctas en distintas alternativas para que no se vuelva predecible.
-        Si fallas, el sistema te explica qué era lo correcto y por qué.
-      </p>
-      <div class="stats">
-        <div class="stat"><small>Modo</small><strong>Dinámico</strong></div>
-        <div class="stat"><small>Preguntas</small><strong id="heroQuestions">20</strong></div>
-        <div class="stat"><small>Temas</small><strong>Banco 1</strong></div>
-        <div class="stat"><small>Feedback</small><strong>Inmediato</strong></div>
-      </div>
-    </section>
-
-    <section class="panel" id="setupPanel">
-      <div class="config-grid">
-        <div>
-          <label for="topicSelect">Tema</label>
-          <select id="topicSelect">
-            <option value="todos">Todos los temas</option>
-            <option value="Buck-Boost">Buck-Boost</option>
-            <option value="PFC">PFC</option>
-            <option value="AC/AC">Reguladores AC/AC</option>
-            <option value="Cicloconvertidor">Cicloconvertidor</option>
-            <option value="SVC">SVC</option>
-            <option value="AC/DC PWM">AC/DC con PWM</option>
-          </select>
-        </div>
-        <div>
-          <label for="countSelect">Cantidad</label>
-          <select id="countSelect">
-            <option value="10">10 preguntas</option>
-            <option value="15">15 preguntas</option>
-            <option value="20" selected>20 preguntas</option>
-            <option value="25">25 preguntas</option>
-          </select>
-        </div>
-        <div>
-          <button class="primary" id="startBtn">Empezar quiz</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="quiz-card" id="quizCard">
-      <div class="topbar">
-        <div class="progress-wrap">
-          <div class="progress-text">
-            <span id="progressLabel">Pregunta 1 de 20</span>
-            <span id="scoreLabel">Puntaje: 0</span>
+  <div class="container">
+    <div class="card">
+      <div class="start-screen" id="startScreen">
+        <div class="top">
+          <div>
+            <h1>Banco 1 · Quiz interactivo</h1>
+            <p>Estas son las 20 preguntas basadas en lo que resolvimos juntos. El sistema te dirá si acertaste y te explicará la respuesta correcta cuando te equivoques.</p>
           </div>
-          <div class="progress"><div class="bar" id="progressBar"></div></div>
+          <div class="badge">20 preguntas reales</div>
         </div>
-        <div class="pill" id="streakLabel">Racha: 0</div>
-      </div>
 
-      <div class="question-head">
-        <span class="topic" id="topicBadge">Tema</span>
-        <span class="difficulty" id="difficultyBadge">Nivel</span>
-      </div>
-
-      <div class="question" id="questionText"></div>
-      <div class="options" id="optionsBox"></div>
-
-      <div class="explain" id="feedbackBox"></div>
-
-      <div class="actions">
-        <button class="primary" id="checkBtn">Revisar respuesta</button>
-        <button class="secondary hidden" id="nextBtn">Siguiente</button>
-        <button class="danger" id="restartBtn">Reiniciar</button>
-      </div>
-    </section>
-
-    <section class="summary" id="summaryBox">
-      <div class="summary-grid">
-        <div>
-          <h2 style="margin-top:0">Resultado final</h2>
-          <div class="celebrate" id="finalMessage"></div>
-          <p class="mini" id="finalStats"></p>
-          <div class="review-list" id="reviewList"></div>
+        <div class="stats">
+          <div class="stat"><span>Temas</span><strong>Buck-Boost, PFC, AC/AC, SVC, PWM</strong></div>
+          <div class="stat"><span>Modo</span><strong>Interactivo</strong></div>
+          <div class="stat"><span>Feedback</span><strong>Inmediato</strong></div>
+          <div class="stat"><span>Objetivo</span><strong>Repasar Banco 1</strong></div>
         </div>
-        <div>
-          <div class="panel" style="margin:0; background: rgba(255,255,255,.04)">
-            <h3 style="margin-top:0">Recomendación</h3>
-            <p class="mini" id="recommendation"></p>
-            <button class="primary" id="retryWrongBtn">Practicar mis errores</button>
-            <div style="height:10px"></div>
-            <button class="secondary" id="playAgainBtn">Jugar otra vez</button>
+
+        <button class="main-btn" onclick="startQuiz()">Empezar quiz</button>
+      </div>
+
+      <div class="question-box" id="questionBox">
+        <div class="progress-box">
+          <div class="small" id="progressText">Pregunta 1 de 20</div>
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
           </div>
         </div>
+
+        <div class="top">
+          <div class="badge" id="topicBadge">Tema</div>
+          <div class="badge" id="scoreBadge">Puntaje: 0</div>
+        </div>
+
+        <div class="question-number" id="questionNumber">Pregunta 1</div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="optionsContainer"></div>
+
+        <div class="feedback" id="feedbackBox"></div>
+
+        <div class="actions">
+          <button class="main-btn" id="checkBtn" onclick="checkAnswer()">Revisar respuesta</button>
+          <button class="secondary-btn" id="nextBtn" onclick="nextQuestion()" style="display:none;">Siguiente</button>
+          <button class="secondary-btn" onclick="restartQuiz()">Reiniciar</button>
+        </div>
       </div>
-    </section>
+
+      <div class="result-screen" id="resultScreen">
+        <h2>Resultado final</h2>
+        <p id="finalScore"></p>
+        <p id="finalMessage"></p>
+        <h3>Preguntas que fallaste</h3>
+        <div id="reviewContainer"></div>
+        <div class="actions">
+          <button class="main-btn" onclick="restartQuiz()">Volver a jugar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const questionBank = [
+    const questions = [
       {
-        topic: 'Buck-Boost', difficulty: 'Básico',
-        q: '¿Cuál es la variable principal de control en un convertidor Buck-Boost?',
-        options: ['La resistencia de carga', 'El ciclo de trabajo D', 'La frecuencia de red', 'El factor de potencia'],
-        correct: 1,
-        explain: 'La variable principal es el ciclo de trabajo D. Al variarlo, la tensión de salida puede subir o bajar.'
+        topic: "Buck-Boost",
+        question: "En un convertidor Buck-Boost, ¿qué ocurre en el estado ON y qué ocurre en el estado OFF?",
+        options: [
+          "En ON el inductor almacena energía y el diodo bloquea; en OFF el inductor entrega energía a la carga y el diodo conduce.",
+          "En ON el capacitor se descarga y en OFF el inductor deja de trabajar.",
+          "En ON el diodo conduce y en OFF el inductor desaparece.",
+          "En ON y OFF ocurre exactamente lo mismo."
+        ],
+        answer: 0,
+        explanation: "La idea correcta es: en ON el inductor almacena energía y el diodo queda bloqueado; en OFF el inductor libera energía hacia la carga y el diodo conduce."
       },
       {
-        topic: 'Buck-Boost', difficulty: 'Básico',
-        q: 'En el estado ON del Buck-Boost, ¿qué sucede?',
-        options: ['El inductor almacena energía y el diodo bloquea', 'El inductor entrega energía y el diodo bloquea', 'El capacitor se descarga por completo', 'La corriente del inductor siempre llega a cero'],
-        correct: 0,
-        explain: 'En ON, el interruptor conduce, el inductor almacena energía en su campo magnético y el diodo permanece bloqueado.'
+        topic: "Buck-Boost",
+        question: "¿Cuál es la diferencia entre CCM y DCM en el Buck-Boost?",
+        options: [
+          "CCM y DCM son lo mismo.",
+          "En CCM la corriente del inductor nunca llega a cero; en DCM sí llega a cero.",
+          "En DCM la corriente siempre es mayor.",
+          "En CCM no existe inductor."
+        ],
+        answer: 1,
+        explanation: "CCM es conducción continua: la corriente del inductor no llega a cero. DCM es conducción discontinua: sí llega a cero durante parte del período."
       },
       {
-        topic: 'Buck-Boost', difficulty: 'Básico',
-        q: 'En el estado OFF del Buck-Boost, la opción correcta es:',
-        options: ['El diodo bloquea y el inductor sigue cargándose', 'El inductor deja de actuar', 'El inductor entrega energía a la carga y el diodo conduce', 'Solo conduce el capacitor'],
-        correct: 2,
-        explain: 'En OFF, el inductor libera la energía almacenada hacia la carga y el diodo conduce para permitir ese camino.'
+        topic: "Buck-Boost",
+        question: "¿Cuál es la variable principal de control que permite subir o bajar la tensión de salida en el Buck-Boost?",
+        options: [
+          "La temperatura",
+          "La frecuencia de la red",
+          "El ciclo de trabajo D",
+          "La resistencia interna del diodo"
+        ],
+        answer: 2,
+        explanation: "La variable principal es el duty cycle o ciclo de trabajo D. Variándolo, el convertidor puede elevar o reducir la tensión de salida."
       },
       {
-        topic: 'Buck-Boost', difficulty: 'Intermedio',
-        q: 'La diferencia entre CCM y DCM es que:',
-        options: ['En CCM la corriente del inductor nunca llega a cero; en DCM sí llega a cero', 'En DCM la corriente siempre es mayor', 'En CCM el diodo nunca conduce', 'En DCM no existe ciclo de trabajo'],
-        correct: 0,
-        explain: 'CCM es conducción continua: la corriente del inductor no llega a cero. En DCM sí aparece un intervalo con corriente cero.'
+        topic: "PFC",
+        question: "¿Cuál es la función principal del PFC y qué forma debe tener idealmente la corriente de entrada?",
+        options: [
+          "Solo regular una tensión DC y tener corriente cuadrada.",
+          "Aumentar la frecuencia y tener corriente triangular.",
+          "Apagar armónicos sin importar la fase.",
+          "Mejorar el factor de potencia; la corriente debe ser senoidal y estar en fase con la tensión."
+        ],
+        answer: 3,
+        explanation: "La etapa PFC busca mejorar el factor de potencia y reducir la distorsión. Idealmente la corriente de entrada debe ser senoidal y en fase con la tensión."
       },
       {
-        topic: 'Buck-Boost', difficulty: 'Intermedio',
-        q: 'En modo DCM, la relación de conversión del Buck-Boost:',
-        options: ['Depende solo de D', 'No depende de la carga', 'No depende de la inductancia', 'No depende solo de D; también influyen carga e inductancia'],
-        correct: 3,
-        explain: 'En DCM la conversión ya no depende solo del duty cycle. También intervienen la inductancia, la carga y otras condiciones de operación.'
+        topic: "PFC",
+        question: "¿Qué es el THD y qué consecuencias tiene que sea alto?",
+        options: [
+          "Es la Distorsión Armónica Total; si es alto produce más pérdidas, calentamiento y peor factor de potencia.",
+          "Es un error de temperatura que no afecta al sistema.",
+          "Es una tensión de referencia positiva.",
+          "Es un tipo de transformador."
+        ],
+        answer: 0,
+        explanation: "THD significa Distorsión Armónica Total. Un THD alto implica más armónicos, más pérdidas, calentamiento y menor calidad de energía."
       },
       {
-        topic: 'PFC', difficulty: 'Básico',
-        q: 'La función principal del PFC es:',
-        options: ['Solo regular una tensión DC', 'Mejorar el factor de potencia y reducir la distorsión de corriente', 'Aumentar siempre la frecuencia', 'Eliminar todo uso del rectificador'],
-        correct: 1,
-        explain: 'El PFC busca que la corriente de entrada tenga mejor calidad: más senoidal, en fase con la tensión y con menor distorsión.'
+        topic: "AC/AC",
+        question: "En un regulador AC/AC, ¿qué pasa con el valor RMS de salida cuando el ángulo de disparo α aumenta?",
+        options: [
+          "Sube el RMS y mejora el factor de potencia.",
+          "Baja el RMS, sube el THD y empeora el factor de potencia.",
+          "La frecuencia aumenta automáticamente.",
+          "No ocurre ningún cambio."
+        ],
+        answer: 1,
+        explanation: "Más ángulo de disparo implica menos tiempo de conducción, menor RMS, más distorsión armónica y peor factor de potencia."
       },
       {
-        topic: 'PFC', difficulty: 'Básico',
-        q: 'Idealmente, la corriente de entrada en una etapa PFC debe ser:',
-        options: ['Cuadrada y adelantada', 'Pulsante y desfasada', 'Senoidal y en fase con la tensión', 'Constante en todo instante'],
-        correct: 2,
-        explain: 'La meta del PFC es que la corriente siga a la tensión de entrada: forma senoidal y en fase.'
+        topic: "AC/AC",
+        question: "En un regulador AC/AC, ¿qué significa que sea una conversión directa?",
+        options: [
+          "Que convierte AC a AC sin enlace DC intermedio.",
+          "Que siempre aumenta el voltaje.",
+          "Que necesita batería externa.",
+          "Que usa un motor para controlar la señal."
+        ],
+        answer: 0,
+        explanation: "Conversión directa significa que pasa de AC a AC sin etapa DC intermedia."
       },
       {
-        topic: 'PFC', difficulty: 'Intermedio',
-        q: 'THD significa:',
-        options: ['Tiempo de Histéresis Dinámica', 'Distorsión Armónica Total', 'Tensión Homogénea Directa', 'Transferencia de Hardware Digital'],
-        correct: 1,
-        explain: 'THD es Distorsión Armónica Total, una medida de cuánto se deforma una señal respecto a una senoide ideal.'
+        topic: "AC/AC",
+        question: "En una carga RL conectada a un regulador AC/AC, ¿qué pasa con la conducción de corriente cerca del cruce por cero?",
+        options: [
+          "La corriente siempre se corta exactamente en cero.",
+          "La conducción se prolonga más allá del cruce por cero por efecto del inductor.",
+          "La resistencia elimina la corriente por completo.",
+          "La corriente se vuelve DC."
+        ],
+        answer: 1,
+        explanation: "En cargas RL la inductancia hace que la corriente no se anule instantáneamente, así que la conducción continúa después del cruce por cero."
       },
       {
-        topic: 'PFC', difficulty: 'Intermedio',
-        q: 'Si el THD es alto, una consecuencia típica es:',
-        options: ['Menor distorsión', 'Más pérdidas y calentamiento', 'Factor de potencia perfecto', 'Menos armónicos'],
-        correct: 1,
-        explain: 'Un THD alto implica más armónicos, lo que suele traer pérdidas extra, calentamiento y peor factor de potencia.'
+        topic: "AC/AC",
+        question: "¿Qué es el burst control o control por ciclos completos en un regulador AC/AC?",
+        options: [
+          "Disparar siempre a 180°.",
+          "Cambiar la frecuencia de la red.",
+          "Dejar pasar ciclos completos y bloquear otros ciclos completos.",
+          "Variar solo el ancho de pulso como en PWM."
+        ],
+        answer: 2,
+        explanation: "El burst control consiste en permitir ciclos completos y bloquear otros, regulando la potencia de forma distinta al ángulo de fase."
       },
       {
-        topic: 'PFC', difficulty: 'Básico',
-        q: '¿Cuál de estas NO es la idea central del PFC?',
-        options: ['Mejorar la forma de la corriente de entrada', 'Lograr corriente en fase con la tensión', 'Reducir la distorsión armónica', 'Ser únicamente un regulador DC'],
-        correct: 3,
-        explain: 'La etapa PFC no se define solo por regular DC. Su meta central es mejorar la calidad de la corriente de entrada.'
+        topic: "Cicloconvertidor",
+        question: "¿Qué es un cicloconvertidor y cuál es su principal característica respecto a la frecuencia de salida?",
+        options: [
+          "Es un rectificador DC/AC con frecuencia infinita.",
+          "Es un AC/AC directo cuya frecuencia de salida normalmente es menor que la de entrada.",
+          "Es un convertidor que solo trabaja con batería.",
+          "Es un sistema que siempre duplica la frecuencia."
+        ],
+        answer: 1,
+        explanation: "El cicloconvertidor es un AC/AC directo que construye una salida de frecuencia variable, normalmente menor que la de entrada."
       },
       {
-        topic: 'AC/AC', difficulty: 'Básico',
-        q: 'Un regulador AC/AC controla principalmente:',
-        options: ['La frecuencia de salida manteniendo fijo el RMS', 'El valor RMS sin cambiar la frecuencia', 'Solo la potencia reactiva', 'La corriente DC del bus'],
-        correct: 1,
-        explain: 'La idea central del regulador AC/AC es variar el valor eficaz de la tensión aplicada a la carga sin modificar la frecuencia de la red.'
+        topic: "Cicloconvertidor",
+        question: "¿En qué tipo de aplicaciones se usa típicamente el cicloconvertidor?",
+        options: [
+          "En equipos de muy alta potencia y baja velocidad, como grandes accionamientos industriales.",
+          "En calculadoras escolares.",
+          "Solo en luces LED domésticas.",
+          "Únicamente en teléfonos móviles."
+        ],
+        answer: 0,
+        explanation: "Se usa en aplicaciones de muy alta potencia y baja velocidad, por ejemplo grandes motores, molinos o propulsión."
       },
       {
-        topic: 'AC/AC', difficulty: 'Básico',
-        q: 'Decir que el regulador AC/AC es una conversión directa significa que:',
-        options: ['Usa un enlace DC intermedio', 'Convierte AC a AC sin enlace DC intermedio', 'Siempre eleva tensión', 'Solo funciona con cargas resistivas'],
-        correct: 1,
-        explain: 'Es conversión directa porque no pasa primero por una etapa DC intermedia.'
+        topic: "SVC",
+        question: "En un SVC, ¿cuál es su función principal dentro del sistema eléctrico?",
+        options: [
+          "Cambiar la frecuencia del sistema.",
+          "Rectificar AC a DC.",
+          "Compensar potencia reactiva para regular tensión y mejorar el factor de potencia.",
+          "Eliminar transformadores."
+        ],
+        answer: 2,
+        explanation: "El SVC compensa potencia reactiva para sostener tensión y mejorar el factor de potencia del sistema."
       },
       {
-        topic: 'AC/AC', difficulty: 'Intermedio',
-        q: 'Cuando el ángulo de disparo α aumenta, normalmente ocurre que:',
-        options: ['Aumenta el RMS y baja el THD', 'Baja el RMS, sube el THD y empeora el factor de potencia', 'No cambia nada relevante', 'La frecuencia aumenta'],
-        correct: 1,
-        explain: 'Un α mayor retrasa más la conducción, disminuye el RMS y empeora la calidad de onda.'
+        topic: "SVC",
+        question: "¿Qué significa TCR dentro de un SVC?",
+        options: [
+          "Transformador de Corriente Reactiva",
+          "Terminal de Control Rápido",
+          "Total Compensation Reactor",
+          "Thyristor Controlled Reactor"
+        ],
+        answer: 3,
+        explanation: "TCR significa Thyristor Controlled Reactor, es decir, reactor controlado por tiristores."
       },
       {
-        topic: 'AC/AC', difficulty: 'Intermedio',
-        q: 'En una carga RL conectada a un regulador AC/AC, cerca del cruce por cero:',
-        options: ['La corriente se anula exactamente con la tensión', 'La conducción se prolonga por efecto del inductor', 'No existe desfase', 'Solo manda la resistencia'],
-        correct: 1,
-        explain: 'El inductor hace que la corriente no se corte instantáneamente; por eso la conducción continúa más allá del cruce por cero.'
+        topic: "SVC",
+        question: "En un TCR, ¿qué ocurre cuando el ángulo de disparo α se acerca a 180°?",
+        options: [
+          "El reactor casi no conduce y absorbe muy poca reactiva.",
+          "La corriente se vuelve infinita.",
+          "Se convierte en capacitor.",
+          "La red cambia de frecuencia."
+        ],
+        answer: 0,
+        explanation: "Cuando α se acerca a 180°, la conducción del reactor se reduce casi a cero."
       },
       {
-        topic: 'AC/AC', difficulty: 'Intermedio',
-        q: 'El burst control o control por ciclos completos consiste en:',
-        options: ['Variar solo el ancho de pulso', 'Dejar pasar ciclos completos y bloquear otros', 'Cambiar la frecuencia de la red', 'Disparar siempre a 180°'],
-        correct: 1,
-        explain: 'Burst control no es PWM. Se basa en aplicar ciclos enteros y suprimir otros para regular la potencia entregada.'
+        topic: "AC/DC PWM",
+        question: "En un sistema AC/DC moderno con PWM, ¿qué hace el lazo externo y qué hace el lazo interno?",
+        options: [
+          "El externo regula Vdc y el interno regula o moldea la corriente.",
+          "El externo controla el ángulo alfa y el interno la temperatura.",
+          "Ambos hacen exactamente lo mismo.",
+          "El externo apaga la red y el interno prende el capacitor."
+        ],
+        answer: 0,
+        explanation: "En el control de doble lazo, el lazo externo regula la tensión del bus DC y el lazo interno controla la corriente."
       },
       {
-        topic: 'Cicloconvertidor', difficulty: 'Básico',
-        q: 'Un cicloconvertidor es:',
-        options: ['Un convertidor DC/AC con filtro LCL', 'Un AC/AC directo con frecuencia de salida normalmente menor', 'Un rectificador no controlado', 'Un inversor monofásico'],
-        correct: 1,
-        explain: 'El cicloconvertidor convierte AC a AC directamente y suele entregar una frecuencia de salida menor que la de entrada.'
+        topic: "AC/DC PWM",
+        question: "En ese mismo sistema, ¿cuál es la variable manipulada por el controlador?",
+        options: [
+          "La reactancia de línea",
+          "El duty cycle d del PWM",
+          "El ángulo de disparo de SCR",
+          "La temperatura del cable"
+        ],
+        answer: 1,
+        explanation: "En un sistema PWM moderno, la variable manipulada es el duty cycle, no el ángulo de disparo de SCR."
       },
       {
-        topic: 'Cicloconvertidor', difficulty: 'Intermedio',
-        q: 'Una aplicación típica del cicloconvertidor es:',
-        options: ['Equipos de muy alta potencia y baja velocidad', 'Cargadores USB', 'Circuitos lógicos digitales', 'Solo iluminación LED'],
-        correct: 0,
-        explain: 'Se usa en grandes accionamientos industriales, como molinos o propulsión, donde se requiere alta potencia y baja velocidad.'
+        topic: "AC/DC PWM",
+        question: "¿Qué significa PWM y qué idea básica hay detrás de este método de control?",
+        options: [
+          "Power Wave Method; mide ondas de potencia.",
+          "Pulse Width Modulation; variar el ancho de pulso para controlar la salida.",
+          "Phase Wiring Mode; cambiar fases manualmente.",
+          "Pulse Watt Meter; medir vatios."
+        ],
+        answer: 1,
+        explanation: "PWM significa modulación por ancho de pulso. Consiste en variar el tiempo de encendido dentro de un período fijo."
       },
       {
-        topic: 'Cicloconvertidor', difficulty: 'Intermedio',
-        q: 'La principal desventaja del cicloconvertidor suele ser:',
-        options: ['No puede trabajar con tiristores', 'No permite control', 'Alta distorsión armónica y forma de onda no senoidal', 'Que siempre requiere batería'],
-        correct: 2,
-        explain: 'El cicloconvertidor maneja bien alta potencia, pero a costa de una forma de onda más distorsionada.'
+        topic: "AC/DC PWM",
+        question: "¿Cuál es el objetivo principal de un rectificador PWM trifásico respecto a la red de entrada?",
+        options: [
+          "Solo producir calor en la red.",
+          "Tener Vdc estable, corrientes senoidales y factor de potencia cercano a 1.",
+          "Trabajar únicamente con SCR.",
+          "Eliminar cualquier control."
+        ],
+        answer: 1,
+        explanation: "El rectificador PWM trifásico busca tomar energía con buena calidad: bajo THD, FP alto y bus DC estable."
       },
       {
-        topic: 'SVC', difficulty: 'Básico',
-        q: 'La función principal de un SVC es:',
-        options: ['Compensar potencia reactiva para regular tensión y mejorar el factor de potencia', 'Rectificar AC a DC', 'Cambiar la frecuencia de la red', 'Sustituir todos los transformadores'],
-        correct: 0,
-        explain: 'El SVC actúa sobre la potencia reactiva del sistema para sostener tensión y mejorar el factor de potencia.'
+        topic: "AC/DC PWM",
+        question: "¿Qué ventaja tiene usar interleaving en convertidores de potencia?",
+        options: [
+          "Aumentar el ruido y el rizado.",
+          "Usar una sola rama sin control.",
+          "Reducir el rizado y repartir mejor la corriente entre varias ramas en paralelo desfasadas.",
+          "Eliminar la modulación PWM."
+        ],
+        answer: 2,
+        explanation: "El interleaving utiliza ramas en paralelo con PWM desfasadas para repartir corriente y reducir el rizado."
       },
       {
-        topic: 'SVC', difficulty: 'Básico',
-        q: 'TCR significa:',
-        options: ['Transformador de Corriente Rápida', 'Thyristor Controlled Reactor', 'Terminal de Control Reactivo', 'Total Compensation Regulator'],
-        correct: 1,
-        explain: 'TCR significa reactor controlado por tiristores: una bobina cuya conducción se ajusta con el ángulo de disparo.'
-      },
-      {
-        topic: 'SVC', difficulty: 'Intermedio',
-        q: 'Si en un TCR el ángulo α se acerca a 180°, entonces:',
-        options: ['Conduce más corriente', 'El reactor casi no conduce y absorbe muy poca reactiva', 'Se vuelve un capacitor', 'La frecuencia de red disminuye'],
-        correct: 1,
-        explain: 'A medida que α se acerca a 180°, el TCR reduce su conducción casi hasta cero.'
-      },
-      {
-        topic: 'SVC', difficulty: 'Intermedio',
-        q: 'Los filtros LC en un SVC se utilizan principalmente para:',
-        options: ['Elevar el voltaje de línea', 'Eliminar el ángulo de disparo', 'Reducir armónicos hacia la red', 'Medir frecuencia'],
-        correct: 2,
-        explain: 'Los TCR generan armónicos; por eso se añaden filtros LC para evitar que esos armónicos se inyecten a la red.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Básico',
-        q: 'En un sistema AC/DC moderno con PWM, el lazo externo se encarga de:',
-        options: ['Regular Vdc', 'Definir la frecuencia de red', 'Activar el transformador', 'Eliminar totalmente el rectificador'],
-        correct: 0,
-        explain: 'El lazo externo regula la tensión del bus DC y genera la referencia necesaria para el control interno.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Básico',
-        q: 'En ese mismo sistema, el lazo interno se encarga de:',
-        options: ['Moldear o regular la corriente', 'Subir la tensión de red', 'Disparar SCR con α', 'Cambiar la frecuencia de la red'],
-        correct: 0,
-        explain: 'El lazo interno actúa sobre la corriente y lo hace ajustando la señal de control del convertidor.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Básico',
-        q: 'La variable manipulada típica en un convertidor PWM es:',
-        options: ['El duty cycle d', 'El factor de potencia', 'La impedancia de red', 'La inductancia física'],
-        correct: 0,
-        explain: 'En PWM la variable manipulada es el duty cycle, es decir, el tiempo de encendido relativo dentro del período.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Intermedio',
-        q: 'PWM significa:',
-        options: ['Pulse Width Modulation', 'Power Wave Method', 'Phase Wiring Mode', 'Pulse Watt Meter'],
-        correct: 0,
-        explain: 'PWM significa modulación por ancho de pulso: se varía el ancho del pulso para controlar la salida.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Intermedio',
-        q: 'El objetivo principal de un rectificador PWM trifásico es:',
-        options: ['Tener Vdc estable, corrientes senoidales y FP cercano a 1', 'Generar solo corriente DC pura sin control', 'Trabajar únicamente con SCR', 'Eliminar toda electrónica de control'],
-        correct: 0,
-        explain: 'El rectificador PWM trifásico busca tomar energía de la red con buena calidad: bajo THD, FP alto y bus DC estable.'
-      },
-      {
-        topic: 'AC/DC PWM', difficulty: 'Intermedio',
-        q: 'Interleaving significa usar:',
-        options: ['Una sola rama con frecuencia cero', 'Ramas en paralelo con PWM desfasadas', 'Un filtro RC únicamente', 'Solo control por ángulo α'],
-        correct: 1,
-        explain: 'Interleaving usa varias ramas en paralelo desfasadas entre sí para repartir corriente y reducir rizado.'
+        topic: "Control",
+        question: "¿Cuál es la diferencia entre control por ángulo de disparo y control PWM?",
+        options: [
+          "No existe diferencia.",
+          "Ángulo de disparo varía el instante de encendido en AC; PWM varía el ancho del pulso o tiempo de encendido.",
+          "PWM usa siempre tiristores y alfa usa solo baterías.",
+          "Ambos cambian únicamente la temperatura."
+        ],
+        answer: 1,
+        explanation: "El control por ángulo de disparo cambia el instante en que conduce el dispositivo dentro de la onda AC. El PWM cambia el ancho del pulso o el tiempo de encendido."
       }
     ];
 
-    const topicSelect = document.getElementById('topicSelect');
-    const countSelect = document.getElementById('countSelect');
-    const startBtn = document.getElementById('startBtn');
-    const heroQuestions = document.getElementById('heroQuestions');
-
-    const quizCard = document.getElementById('quizCard');
-    const summaryBox = document.getElementById('summaryBox');
-    const setupPanel = document.getElementById('setupPanel');
-    const questionText = document.getElementById('questionText');
-    const optionsBox = document.getElementById('optionsBox');
-    const topicBadge = document.getElementById('topicBadge');
-    const difficultyBadge = document.getElementById('difficultyBadge');
-    const checkBtn = document.getElementById('checkBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const restartBtn = document.getElementById('restartBtn');
-    const feedbackBox = document.getElementById('feedbackBox');
-    const progressBar = document.getElementById('progressBar');
-    const progressLabel = document.getElementById('progressLabel');
-    const scoreLabel = document.getElementById('scoreLabel');
-    const streakLabel = document.getElementById('streakLabel');
-    const finalMessage = document.getElementById('finalMessage');
-    const finalStats = document.getElementById('finalStats');
-    const reviewList = document.getElementById('reviewList');
-    const recommendation = document.getElementById('recommendation');
-    const retryWrongBtn = document.getElementById('retryWrongBtn');
-    const playAgainBtn = document.getElementById('playAgainBtn');
-
-    let selectedQuestions = [];
-    let currentIndex = 0;
+    let currentQuestion = 0;
     let score = 0;
-    let streak = 0;
     let selectedOption = null;
     let answered = false;
-    let wrongAnswers = [];
+    let wrongQuestions = [];
 
-    function shuffle(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function getPool() {
-      const topic = topicSelect.value;
-      if (topic === 'todos') return questionBank;
-      return questionBank.filter(q => q.topic === topic);
-    }
-
-    function startQuiz(customPool = null) {
-      const pool = customPool || getPool();
-      const count = Math.min(Number(countSelect.value), pool.length);
-      selectedQuestions = shuffle(pool).slice(0, count).map(q => ({ ...q }));
-      currentIndex = 0;
+    function startQuiz() {
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("resultScreen").style.display = "none";
+      document.getElementById("questionBox").style.display = "block";
+      currentQuestion = 0;
       score = 0;
-      streak = 0;
-      wrongAnswers = [];
       selectedOption = null;
       answered = false;
-      summaryBox.style.display = 'none';
-      quizCard.style.display = 'block';
-      setupPanel.classList.add('hidden');
+      wrongQuestions = [];
       renderQuestion();
     }
 
     function renderQuestion() {
-      const item = selectedQuestions[currentIndex];
+      const q = questions[currentQuestion];
       selectedOption = null;
       answered = false;
-      feedbackBox.style.display = 'none';
-      feedbackBox.className = 'explain';
-      nextBtn.classList.add('hidden');
-      checkBtn.classList.remove('hidden');
 
-      questionText.textContent = item.q;
-      topicBadge.textContent = item.topic;
-      difficultyBadge.textContent = item.difficulty;
-      progressLabel.textContent = `Pregunta ${currentIndex + 1} de ${selectedQuestions.length}`;
-      scoreLabel.textContent = `Puntaje: ${score}`;
-      streakLabel.textContent = `Racha: ${streak}`;
-      progressBar.style.width = `${(currentIndex / selectedQuestions.length) * 100}%`;
+      document.getElementById("questionNumber").textContent = "Pregunta " + (currentQuestion + 1);
+      document.getElementById("questionText").textContent = q.question;
+      document.getElementById("topicBadge").textContent = q.topic;
+      document.getElementById("scoreBadge").textContent = "Puntaje: " + score;
+      document.getElementById("progressText").textContent = "Pregunta " + (currentQuestion + 1) + " de " + questions.length;
+      document.getElementById("progressBar").style.width = ((currentQuestion) / questions.length) * 100 + "%";
 
-      optionsBox.innerHTML = '';
-      item.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'option';
-        btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
-        btn.onclick = () => {
-          if (answered) return;
-          selectedOption = idx;
-          [...optionsBox.children].forEach(el => el.classList.remove('selected'));
-          btn.classList.add('selected');
-        };
-        optionsBox.appendChild(btn);
+      const container = document.getElementById("optionsContainer");
+      container.innerHTML = "";
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.innerHTML = "<strong>" + String.fromCharCode(65 + index) + ".</strong> " + option;
+        btn.onclick = () => selectOption(index, btn);
+        container.appendChild(btn);
       });
+
+      const feedback = document.getElementById("feedbackBox");
+      feedback.style.display = "none";
+      feedback.className = "feedback";
+      feedback.innerHTML = "";
+
+      document.getElementById("checkBtn").style.display = "inline-block";
+      document.getElementById("nextBtn").style.display = "none";
     }
 
-    function explainResult(isCorrect, item) {
-      const correctLabel = String.fromCharCode(65 + item.correct);
-      const chosen = selectedOption === null ? 'Sin respuesta' : `${String.fromCharCode(65 + selectedOption)}. ${item.options[selectedOption]}`;
-      feedbackBox.style.display = 'block';
-      if (isCorrect) {
-        feedbackBox.classList.add('ok');
-        feedbackBox.innerHTML = `<strong>✅ Correcto.</strong><br><br><strong>Tu respuesta:</strong> ${chosen}<br><strong>Por qué está bien:</strong> ${item.explain}`;
-      } else {
-        feedbackBox.classList.add('bad');
-        feedbackBox.innerHTML = `<strong>❌ No fue correcta.</strong><br><br><strong>Tu respuesta:</strong> ${chosen}<br><strong>Respuesta correcta:</strong> ${correctLabel}. ${item.options[item.correct]}<br><strong>Explicación:</strong> ${item.explain}`;
-      }
-    }
-
-    checkBtn.onclick = () => {
+    function selectOption(index, element) {
       if (answered) return;
-      const item = selectedQuestions[currentIndex];
-      answered = true;
-
-      if (selectedOption === null) {
-        streak = 0;
-        wrongAnswers.push(item);
-        explainResult(false, item);
-      } else {
-        const children = [...optionsBox.children];
-        children[item.correct].classList.add('correct');
-        if (selectedOption !== item.correct) {
-          children[selectedOption].classList.add('wrong');
-        }
-
-        const isCorrect = selectedOption === item.correct;
-        if (isCorrect) {
-          score++;
-          streak++;
-        } else {
-          streak = 0;
-          wrongAnswers.push(item);
-        }
-        explainResult(isCorrect, item);
-      }
-
-      scoreLabel.textContent = `Puntaje: ${score}`;
-      streakLabel.textContent = `Racha: ${streak}`;
-      checkBtn.classList.add('hidden');
-      nextBtn.classList.remove('hidden');
-      progressBar.style.width = `${((currentIndex + 1) / selectedQuestions.length) * 100}%`;
-    };
-
-    nextBtn.onclick = () => {
-      currentIndex++;
-      if (currentIndex >= selectedQuestions.length) {
-        showSummary();
-      } else {
-        renderQuestion();
-      }
-    };
-
-    function showSummary() {
-      quizCard.style.display = 'none';
-      summaryBox.style.display = 'block';
-      const percent = Math.round((score / selectedQuestions.length) * 100);
-
-      let message = 'Buen trabajo.';
-      if (percent >= 90) message = 'Excelente. Ya estás fuerte para el examen.';
-      else if (percent >= 75) message = 'Muy bien. Ya tienes buena base, solo pule detalles.';
-      else if (percent >= 60) message = 'Vas avanzando. Conviene reforzar algunos conceptos.';
-      else message = 'Toca repasar, pero ya detectaste exactamente qué mejorar.';
-
-      finalMessage.textContent = message;
-      finalStats.textContent = `Acertaste ${score} de ${selectedQuestions.length} preguntas (${percent}%). Errores detectados: ${wrongAnswers.length}.`;
-
-      reviewList.innerHTML = '';
-      if (wrongAnswers.length === 0) {
-        const div = document.createElement('div');
-        div.className = 'review-item';
-        div.innerHTML = '<strong>Sin errores.</strong><br><span class="mini">Puedes subir la dificultad repitiendo con otro tema o más preguntas.</span>';
-        reviewList.appendChild(div);
-      } else {
-        wrongAnswers.slice(0, 8).forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'review-item';
-          div.innerHTML = `<strong>${item.topic}</strong><br>${item.q}<br><span class="mini">Clave: ${item.options[item.correct]}. ${item.explain}</span>`;
-          reviewList.appendChild(div);
-        });
-      }
-
-      recommendation.textContent = wrongAnswers.length === 0
-        ? 'Haz otra ronda cambiando de tema o aumentando la cantidad para mantener la velocidad mental.'
-        : 'Practica tus errores primero. El modo de repaso te lanzará solo las preguntas que fallaste para consolidar memoria.';
+      selectedOption = index;
+      const options = document.querySelectorAll(".option");
+      options.forEach(opt => opt.classList.remove("selected"));
+      element.classList.add("selected");
     }
 
-    retryWrongBtn.onclick = () => {
-      if (wrongAnswers.length === 0) {
-        alert('No tienes errores para repasar. Prueba otro tema o más preguntas.');
+    function checkAnswer() {
+      if (answered || selectedOption === null) {
+        alert("Primero selecciona una alternativa.");
         return;
       }
-      countSelect.value = String(Math.min(wrongAnswers.length, 20));
-      startQuiz(shuffle(wrongAnswers));
-    };
 
-    playAgainBtn.onclick = () => {
-      summaryBox.style.display = 'none';
-      setupPanel.classList.remove('hidden');
-      heroQuestions.textContent = countSelect.value;
-    };
+      answered = true;
+      const q = questions[currentQuestion];
+      const options = document.querySelectorAll(".option");
+      const feedback = document.getElementById("feedbackBox");
 
-    restartBtn.onclick = () => {
-      if (confirm('¿Quieres reiniciar el quiz?')) {
-        summaryBox.style.display = 'none';
-        quizCard.style.display = 'none';
-        setupPanel.classList.remove('hidden');
+      options[q.answer].classList.add("correct");
+
+      if (selectedOption === q.answer) {
+        score++;
+        feedback.classList.add("ok");
+        feedback.innerHTML = "<strong>✅ Correcto.</strong><br><br>" + q.explanation;
+      } else {
+        options[selectedOption].classList.add("wrong");
+        wrongQuestions.push(q);
+        feedback.classList.add("bad");
+        feedback.innerHTML = "<strong>❌ Incorrecto.</strong><br><br><strong>Respuesta correcta:</strong> " +
+          String.fromCharCode(65 + q.answer) + ". " + q.options[q.answer] +
+          "<br><br><strong>Explicación:</strong> " + q.explanation;
       }
-    };
 
-    startBtn.onclick = () => startQuiz();
-    countSelect.onchange = () => { heroQuestions.textContent = countSelect.value; };
-    heroQuestions.textContent = countSelect.value;
+      feedback.style.display = "block";
+      document.getElementById("scoreBadge").textContent = "Puntaje: " + score;
+      document.getElementById("progressBar").style.width = ((currentQuestion + 1) / questions.length) * 100 + "%";
+      document.getElementById("checkBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("questionBox").style.display = "none";
+      document.getElementById("resultScreen").style.display = "block";
+
+      const total = questions.length;
+      const percent = Math.round((score / total) * 100);
+
+      document.getElementById("finalScore").textContent =
+        "Obtuviste " + score + " de " + total + " respuestas correctas (" + percent + "%).";
+
+      let message = "";
+      if (percent >= 90) {
+        message = "Excelente. Ya dominas muy bien el Banco 1.";
+      } else if (percent >= 75) {
+        message = "Muy bien. Tienes buena base, solo te falta pulir algunos detalles.";
+      } else if (percent >= 60) {
+        message = "Vas avanzando. Conviene reforzar los temas donde fallaste.";
+      } else {
+        message = "Necesitas repasar más, pero este resultado te ayuda a detectar tus puntos débiles.";
+      }
+
+      document.getElementById("finalMessage").textContent = message;
+
+      const review = document.getElementById("reviewContainer");
+      review.innerHTML = "";
+
+      if (wrongQuestions.length === 0) {
+        review.innerHTML = "<div class='review-item'>No fallaste ninguna pregunta. Muy buen trabajo.</div>";
+      } else {
+        wrongQuestions.forEach((q, i) => {
+          const item = document.createElement("div");
+          item.className = "review-item";
+          item.innerHTML = `
+            <strong>${i + 1}. ${q.question}</strong>
+            <div class="small" style="margin-top:8px;"><strong>Respuesta correcta:</strong> ${q.options[q.answer]}</div>
+            <div class="small" style="margin-top:6px;"><strong>Explicación:</strong> ${q.explanation}</div>
+          `;
+          review.appendChild(item);
+        });
+      }
+    }
+
+    function restartQuiz() {
+      document.getElementById("startScreen").style.display = "block";
+      document.getElementById("questionBox").style.display = "none";
+      document.getElementById("resultScreen").style.display = "none";
+    }
   </script>
 </body>
 </html>
